@@ -8,10 +8,10 @@
 #include "Chaos/PBDActiveView.h"
 #include "Chaos/Vector.h"
 
-namespace Chaos
+namespace ChaosPluginSandbox
 {
 
-class CHAOS_API FPBDEvolution : public TArrayCollection
+class CHAOS_PLUGIN_SANDBOX_API FPBDEvolution : public TArrayCollection
 {
  public:
 	using FGravityForces = FPerParticleGravity;

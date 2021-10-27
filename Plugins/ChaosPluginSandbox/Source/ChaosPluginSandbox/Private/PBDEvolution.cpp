@@ -44,7 +44,7 @@ bool bChaos_PostIterationUpdates_ISPC_Enabled = true;
 FAutoConsoleVariableRef CVarChaosPostIterationUpdatesISPCEnabled(TEXT("p.Chaos.PostIterationUpdates.ISPC"), bChaos_PostIterationUpdates_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in PBD Post iteration updates"));
 #endif
 
-using namespace Chaos;
+using namespace ChaosPluginSandbox;
 
 void FPBDEvolution::AddGroups(int32 NumGroups)
 {
