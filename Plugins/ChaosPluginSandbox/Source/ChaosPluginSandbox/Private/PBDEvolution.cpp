@@ -7,7 +7,7 @@
 #include "Chaos/PerParticleEulerStepVelocity.h"
 #include "Chaos/PerParticleGravity.h"
 #include "Chaos/PerParticleInitForce.h"
-#include "Chaos/PerParticlePBDCollisionConstraint.h"
+#include "PerParticlePBDCollisionConstraint.h"
 #include "Chaos/PerParticlePBDCCDCollisionConstraint.h"
 #include "Chaos/PerParticlePBDEulerStep.h"
 #include "Chaos/PerParticlePBDGroundConstraint.h"
