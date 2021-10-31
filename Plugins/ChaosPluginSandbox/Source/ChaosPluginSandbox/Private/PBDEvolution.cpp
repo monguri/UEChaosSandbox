@@ -3,7 +3,7 @@
 
 #include "Chaos/Framework/Parallel.h"
 #include "Chaos/PBDCollisionSphereConstraints.h"
-#include "Chaos/PerParticleDampVelocity.h"
+#include "PerParticleDampVelocity.h"
 #include "Chaos/PerParticleEulerStepVelocity.h"
 #include "Chaos/PerParticleGravity.h"
 #include "Chaos/PerParticleInitForce.h"

@@ -1,21 +1,22 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Chaos/PerParticleDampVelocity.h"
+#include "PerParticleDampVelocity.h"
 
 #if INTEL_ISPC
 #include "PerParticleDampVelocity.ispc.generated.h"
 #endif
 
 #if INTEL_ISPC && !UE_BUILD_SHIPPING
-bool bChaos_DampVelocity_ISPC_Enabled = true;
-FAutoConsoleVariableRef CVarChaosDampVelocityISPCEnabled(TEXT("p.Chaos.DampVelocity.ISPC"), bChaos_DampVelocity_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in per particle damp velocity calculation"));
+bool bChaosPluginSandbox_DampVelocity_ISPC_Enabled = true;
+FAutoConsoleVariableRef CVarChaosDampVelocityISPCEnabled(TEXT("p.Chaos.DampVelocity.ISPC"), bChaosPluginSandbox_DampVelocity_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in per particle damp velocity calculation"));
 #endif
 
 using namespace Chaos;
+using namespace ChaosPluginSandbox;
 
 void FPerParticleDampVelocity::UpdatePositionBasedState(const FPBDParticles& Particles, const int32 Offset, const int32 Range)
 {
-	if (bRealTypeCompatibleWithISPC && bChaos_DampVelocity_ISPC_Enabled)
+	if (bRealTypeCompatibleWithISPC && bChaosPluginSandbox_DampVelocity_ISPC_Enabled)
 	{
 #if INTEL_ISPC
 		ispc::UpdatePositionBasedState(

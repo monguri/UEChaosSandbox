@@ -23,7 +23,7 @@ using namespace Chaos;
 using namespace ChaosPluginSandbox;
 
 template<EGeometryParticlesSimType SimType>
-void TPerParticlePBDCollisionConstraint<SimType>::ApplyHelperISPC(FPBDParticles& Particles, const FReal Dt, const int32 Offset, const int32 Range) const
+void ChaosPluginSandbox::TPerParticlePBDCollisionConstraint<SimType>::ApplyHelperISPC(FPBDParticles& Particles, const FReal Dt, const int32 Offset, const int32 Range) const
 {
 	ApplyHelper(Particles, Dt, Offset, Range); // default to non ISPC
 }
@@ -56,7 +56,7 @@ extern "C" void GetPhiWithNormal(const uint8* CollisionParticles, const FReal* I
 }
 
 template<>
-void TPerParticlePBDCollisionConstraint<EGeometryParticlesSimType::Other>::ApplyHelperISPC(FPBDParticles& InParticles, const FReal Dt, int32 Offset, int32 Range) const
+void ChaosPluginSandbox::TPerParticlePBDCollisionConstraint<EGeometryParticlesSimType::Other>::ApplyHelperISPC(FPBDParticles& InParticles, const FReal Dt, int32 Offset, int32 Range) const
 {
 	check(bRealTypeCompatibleWithISPC);
 
