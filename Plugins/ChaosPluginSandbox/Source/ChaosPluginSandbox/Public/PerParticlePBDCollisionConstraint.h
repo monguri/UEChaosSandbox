@@ -11,35 +11,35 @@
 
 // Support ISPC enable/disable in non-shipping builds
 #if !INTEL_ISPC
-const bool bChaos_PerParticleCollision_ISPC_Enabled = false;
+const bool bChaosPluginSandbox_PerParticleCollision_ISPC_Enabled = false;
 #elif UE_BUILD_SHIPPING
-const bool bChaos_PerParticleCollision_ISPC_Enabled = true;
+const bool bChaosPluginSandbox_PerParticleCollision_ISPC_Enabled = true;
 #else
-extern CHAOS_API bool bChaos_PerParticleCollision_ISPC_Enabled;
+extern CHAOSPLUGINSANDBOX_API bool bChaosPluginSandbox_PerParticleCollision_ISPC_Enabled;
 #endif
 
-namespace Chaos
+namespace ChaosPluginSandbox
 {
-template<EGeometryParticlesSimType SimType>
-class CHAOS_API TPerParticlePBDCollisionConstraint final
+template<Chaos::EGeometryParticlesSimType SimType>
+class CHAOSPLUGINSANDBOX_API TPerParticlePBDCollisionConstraint final
 {
 	struct FVelocityConstraint
 	{
-		FVec3 Velocity;
-		FVec3 Normal;
+		Chaos::FVec3 Velocity;
+		Chaos::FVec3 Normal;
 	};
 
 public:
-	typedef TKinematicGeometryParticlesImp<FReal, 3, SimType> FCollisionParticles;
+	typedef Chaos::TKinematicGeometryParticlesImp<Chaos::FReal, 3, SimType> FCollisionParticles;
 
-	TPerParticlePBDCollisionConstraint(const TPBDActiveView<FCollisionParticles>& InParticlesActiveView, TArray<bool>& Collided, TArray<uint32>& DynamicGroupIds, TArray<uint32>& KinematicGroupIds, const TArray<FReal>& PerGroupThickness, const TArray<FReal>& PerGroupFriction)
+	TPerParticlePBDCollisionConstraint(const Chaos::TPBDActiveView<FCollisionParticles>& InParticlesActiveView, TArray<bool>& Collided, TArray<uint32>& DynamicGroupIds, TArray<uint32>& KinematicGroupIds, const TArray<Chaos::FReal>& PerGroupThickness, const TArray<Chaos::FReal>& PerGroupFriction)
 	    : bFastPositionBasedFriction(true), MCollisionParticlesActiveView(InParticlesActiveView), MCollided(Collided), MDynamicGroupIds(DynamicGroupIds), MKinematicGroupIds(KinematicGroupIds), MPerGroupThickness(PerGroupThickness), MPerGroupFriction(PerGroupFriction) {}
 
 	~TPerParticlePBDCollisionConstraint() {}
 
-	inline void ApplyRange(FPBDParticles& Particles, const FReal Dt, const int32 Offset, const int32 Range) const
+	inline void ApplyRange(Chaos::FPBDParticles& Particles, const Chaos::FReal Dt, const int32 Offset, const int32 Range) const
 	{
-		if (bRealTypeCompatibleWithISPC && bChaos_PerParticleCollision_ISPC_Enabled && bFastPositionBasedFriction )
+		if (bRealTypeCompatibleWithISPC && bChaosPluginSandbox_PerParticleCollision_ISPC_Enabled && bFastPositionBasedFriction )
 		{
 			ApplyHelperISPC(Particles, Dt, Offset, Range);
 		}
@@ -49,7 +49,7 @@ public:
 		}
 	}
 
-	void ApplyFriction(FPBDParticles& Particles, const FReal Dt, const int32 Index) const
+	void ApplyFriction(Chaos::FPBDParticles& Particles, const Chaos::FReal Dt, const int32 Index) const
 	{
 		check(!bFastPositionBasedFriction);  // Do not call this function if this is setup to run with fast PB friction
 
@@ -57,21 +57,21 @@ public:
 		{
 			return;
 		}
-		const FReal VN = FVec3::DotProduct(Particles.V(Index), MVelocityConstraints[Index].Normal);
-		const FReal VNBody = FVec3::DotProduct(MVelocityConstraints[Index].Velocity, MVelocityConstraints[Index].Normal);
-		const FVec3 VTBody = MVelocityConstraints[Index].Velocity - VNBody * MVelocityConstraints[Index].Normal;
-		const FVec3 VTRelative = Particles.V(Index) - VN * MVelocityConstraints[Index].Normal - VTBody;
-		const FReal VTRelativeSize = VTRelative.Size();
-		const FReal VNMax = FMath::Max(VN, VNBody);
-		const FReal VNDelta = VNMax - VN;
-		const FReal CoefficientOfFriction = MPerGroupFriction[MDynamicGroupIds[Index]];
+		const Chaos::FReal VN = FVec3::DotProduct(Particles.V(Index), MVelocityConstraints[Index].Normal);
+		const Chaos::FReal VNBody = FVec3::DotProduct(MVelocityConstraints[Index].Velocity, MVelocityConstraints[Index].Normal);
+		const Chaos::FVec3 VTBody = MVelocityConstraints[Index].Velocity - VNBody * MVelocityConstraints[Index].Normal;
+		const Chaos::FVec3 VTRelative = Particles.V(Index) - VN * MVelocityConstraints[Index].Normal - VTBody;
+		const Chaos::FReal VTRelativeSize = VTRelative.Size();
+		const Chaos::FReal VNMax = FMath::Max(VN, VNBody);
+		const Chaos::FReal VNDelta = VNMax - VN;
+		const Chaos::FReal CoefficientOfFriction = MPerGroupFriction[MDynamicGroupIds[Index]];
 		check(CoefficientOfFriction > 0);
 		const FReal Friction = CoefficientOfFriction * VNDelta < VTRelativeSize ? CoefficientOfFriction * VNDelta / VTRelativeSize : 1;
 		Particles.V(Index) = VNMax * MVelocityConstraints[Index].Normal + VTBody + VTRelative * (1 - Friction);
 	}
 
 private:
-	inline void ApplyHelper(FPBDParticles& Particles, const FReal Dt, const int32 Offset, const int32 Range) const
+	inline void ApplyHelper(Chaos::FPBDParticles& Particles, const Chaos::FReal Dt, const int32 Offset, const int32 Range) const
 	{
 		const uint32 DynamicGroupId = MDynamicGroupIds[Offset];  // Particle group Id, must be the same across the entire range
 		const FReal PerGroupFriction = MPerGroupFriction[DynamicGroupId];
@@ -167,17 +167,17 @@ private:
 		}
 	}
 
-	void ApplyHelperISPC(FPBDParticles& Particles, const FReal Dt, int32 Offset, int32 Range) const;
+	void ApplyHelperISPC(Chaos::FPBDParticles& Particles, const Chaos::FReal Dt, int32 Offset, int32 Range) const;
 
 private:
 	bool bFastPositionBasedFriction;
 	// TODO(mlentine): Need a bb hierarchy
-	const TPBDActiveView<FCollisionParticles>& MCollisionParticlesActiveView;
+	const Chaos::TPBDActiveView<FCollisionParticles>& MCollisionParticlesActiveView;
 	TArray<bool>& MCollided;
 	const TArray<uint32>& MDynamicGroupIds;
 	const TArray<uint32>& MKinematicGroupIds;
 	mutable TMap<int32, FVelocityConstraint> MVelocityConstraints;
-	const TArray<FReal>& MPerGroupThickness;
-	const TArray<FReal>& MPerGroupFriction;
+	const TArray<Chaos::FReal>& MPerGroupThickness;
+	const TArray<Chaos::FReal>& MPerGroupFriction;
 };
 }

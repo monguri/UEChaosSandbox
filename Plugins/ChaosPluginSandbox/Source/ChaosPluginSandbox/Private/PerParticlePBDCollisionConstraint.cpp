@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Chaos/PerParticlePBDCollisionConstraint.h"
+#include "PerParticlePBDCollisionConstraint.h"
 #include "ChaosStats.h"
 #include "HAL/IConsoleManager.h"
 #if INTEL_ISPC
@@ -8,8 +8,8 @@
 #endif
 
 #if INTEL_ISPC && !UE_BUILD_SHIPPING
-bool bChaos_PerParticleCollision_ISPC_Enabled = true;
-FAutoConsoleVariableRef CVarChaosPerParticleCollisionISPCEnabled(TEXT("p.Chaos.PerParticleCollision.ISPC"), bChaos_PerParticleCollision_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in per particle collisions"));
+bool bChaosPluginSandbox_PerParticleCollision_ISPC_Enabled = true;
+FAutoConsoleVariableRef CVarChaosPerParticleCollisionISPCEnabled(TEXT("p.Chaos.PerParticleCollision.ISPC"), bChaosPluginSandbox_PerParticleCollision_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in per particle collisions"));
 #endif
 
 static int32 Chaos_PerParticleCollision_ISPC_ParallelBatchSize = 128;
@@ -20,6 +20,7 @@ FAutoConsoleVariableRef CVarChaosPerParticleCollisionISPCFastFriction(TEXT("p.Ch
 #endif
 
 using namespace Chaos;
+using namespace ChaosPluginSandbox;
 
 template<EGeometryParticlesSimType SimType>
 void TPerParticlePBDCollisionConstraint<SimType>::ApplyHelperISPC(FPBDParticles& Particles, const FReal Dt, const int32 Offset, const int32 Range) const
@@ -180,5 +181,5 @@ void TPerParticlePBDCollisionConstraint<EGeometryParticlesSimType::Other>::Apply
 	}
 }
 
-template class Chaos::TPerParticlePBDCollisionConstraint<EGeometryParticlesSimType::RigidBodySim>;
-template class Chaos::TPerParticlePBDCollisionConstraint<EGeometryParticlesSimType::Other>;
+template class ChaosPluginSandbox::TPerParticlePBDCollisionConstraint<Chaos::EGeometryParticlesSimType::RigidBodySim>;
+template class ChaosPluginSandbox::TPerParticlePBDCollisionConstraint<Chaos::EGeometryParticlesSimType::Other>;
