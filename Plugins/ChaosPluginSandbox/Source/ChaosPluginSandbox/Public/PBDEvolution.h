@@ -11,17 +11,17 @@
 namespace ChaosPluginSandbox
 {
 
-class CHAOS_PLUGIN_SANDBOX_API FPBDEvolution : public TArrayCollection
+class CHAOSPLUGINSANDBOX_API FPBDEvolution : public Chaos::TArrayCollection
 {
  public:
-	using FGravityForces = FPerParticleGravity;
+	using FGravityForces = Chaos::FPerParticleGravity;
 
 	// TODO(mlentine): Init particles from some type of input
-	FPBDEvolution(FPBDParticles&& InParticles, FKinematicGeometryClothParticles&& InGeometryParticles, TArray<TVec3<int32>>&& CollisionTriangles, int32 NumIterations = 1, FReal CollisionThickness = 0, FReal SelfCollisionsThickness = 0, FReal CoefficientOfFriction = 0, FReal Damping = 0.04);
+	FPBDEvolution(Chaos::FPBDParticles&& InParticles, Chaos::FKinematicGeometryClothParticles&& InGeometryParticles, TArray<Chaos::TVec3<int32>>&& CollisionTriangles, int32 NumIterations = 1, Chaos::FReal CollisionThickness = 0, Chaos::FReal SelfCollisionsThickness = 0, Chaos::FReal CoefficientOfFriction = 0, Chaos::FReal Damping = 0.04);
 	~FPBDEvolution() {}
 
 	// Advance one time step. Filter the input time step if specified.
-	void AdvanceOneTimeStep(const FReal Dt, const bool bSmoothDt = true);
+	void AdvanceOneTimeStep(const Chaos::FReal Dt, const bool bSmoothDt = true);
 
 	// Remove all particles, will also reset all rules
 	void ResetParticles();
@@ -36,9 +36,9 @@ class CHAOS_PLUGIN_SANDBOX_API FPBDEvolution : public TArrayCollection
 	void ActivateParticleRange(int32 Offset, bool bActivate)  { MParticlesActiveView.ActivateRange(Offset, bActivate); }
 
 	// Particles accessors
-	const FPBDParticles& Particles() const { return MParticles; }
-	FPBDParticles& Particles() { return MParticles; }
-	const TPBDActiveView<FPBDParticles>& ParticlesActiveView() { return MParticlesActiveView; }
+	const Chaos::FPBDParticles& Particles() const { return MParticles; }
+	Chaos::FPBDParticles& Particles() { return MParticles; }
+	const Chaos::TPBDActiveView<Chaos::FPBDParticles>& ParticlesActiveView() { return MParticlesActiveView; }
 
 	const TArray<uint32>& ParticleGroupIds() const { return MParticleGroupIds; }
 
@@ -56,10 +56,10 @@ class CHAOS_PLUGIN_SANDBOX_API FPBDEvolution : public TArrayCollection
 	int32 GetCollisionParticleRangeSize(int32 Offset) const { return MCollisionParticlesActiveView.GetRangeSize(Offset); }
 
 	// Collision particles accessors
-	const FKinematicGeometryClothParticles& CollisionParticles() const { return MCollisionParticles; }
-	FKinematicGeometryClothParticles& CollisionParticles() { return MCollisionParticles; }
+	const Chaos::FKinematicGeometryClothParticles& CollisionParticles() const { return MCollisionParticles; }
+	Chaos::FKinematicGeometryClothParticles& CollisionParticles() { return MCollisionParticles; }
 	const TArray<uint32>& CollisionParticleGroupIds() const { return MCollisionParticleGroupIds; }
-	const TPBDActiveView<FKinematicGeometryClothParticles>& CollisionParticlesActiveView() { return MCollisionParticlesActiveView; }
+	const Chaos::TPBDActiveView<Chaos::FKinematicGeometryClothParticles>& CollisionParticlesActiveView() { return MCollisionParticlesActiveView; }
 
 	// Reset all constraint init and rule functions.
 	void ResetConstraintRules() { MConstraintInits.Reset(); MConstraintRules.Reset(); MConstraintInitsActiveView.Reset(); MConstraintRulesActiveView.Reset();  };
@@ -77,53 +77,53 @@ class CHAOS_PLUGIN_SANDBOX_API FPBDEvolution : public TArrayCollection
 	void ActivateConstraintRuleRange(int32 Offset, bool bActivate) { MConstraintRulesActiveView.ActivateRange(Offset, bActivate); }
 
 	// Constraint accessors
-	const TArray<TFunction<void(const FPBDParticles&, const FReal)>>& ConstraintInits() const { return MConstraintInits; }
-	TArray<TFunction<void(const FPBDParticles&, const FReal)>>& ConstraintInits() { return MConstraintInits; }
-	const TArray<TFunction<void(FPBDParticles&, const FReal)>>& ConstraintRules() const { return MConstraintRules; }
-	TArray<TFunction<void(FPBDParticles&, const FReal)>>& ConstraintRules() { return MConstraintRules; }
+	const TArray<TFunction<void(const Chaos::FPBDParticles&, const Chaos::FReal)>>& ConstraintInits() const { return MConstraintInits; }
+	TArray<TFunction<void(const Chaos::FPBDParticles&, const Chaos::FReal)>>& ConstraintInits() { return MConstraintInits; }
+	const TArray<TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal)>>& ConstraintRules() const { return MConstraintRules; }
+	TArray<TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal)>>& ConstraintRules() { return MConstraintRules; }
 	
-	void SetKinematicUpdateFunction(TFunction<void(FPBDParticles&, const FReal, const FReal, const int32)> KinematicUpdate) { MKinematicUpdate = KinematicUpdate; }
-	void SetCollisionKinematicUpdateFunction(TFunction<void(FKinematicGeometryClothParticles&, const FReal, const FReal, const int32)> KinematicUpdate) { MCollisionKinematicUpdate = KinematicUpdate; }
+	void SetKinematicUpdateFunction(TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal, const Chaos::FReal, const int32)> KinematicUpdate) { MKinematicUpdate = KinematicUpdate; }
+	void SetCollisionKinematicUpdateFunction(TFunction<void(Chaos::FKinematicGeometryClothParticles&, const Chaos::FReal, const Chaos::FReal, const int32)> KinematicUpdate) { MCollisionKinematicUpdate = KinematicUpdate; }
 
-	TFunction<void(FPBDParticles&, const FReal, const int32)>& GetForceFunction(const uint32 GroupId = 0) { return MGroupForceRules[GroupId]; }
-	const TFunction<void(FPBDParticles&, const FReal, const int32)>& GetForceFunction(const uint32 GroupId = 0) const { return MGroupForceRules[GroupId]; }
+	TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal, const int32)>& GetForceFunction(const uint32 GroupId = 0) { return MGroupForceRules[GroupId]; }
+	const TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal, const int32)>& GetForceFunction(const uint32 GroupId = 0) const { return MGroupForceRules[GroupId]; }
 
 	FGravityForces& GetGravityForces(const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); return MGroupGravityForces[GroupId]; }
 	const FGravityForces& GetGravityForces(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupGravityForces[GroupId]; }
 
-	FVelocityField& GetVelocityField(const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); return MGroupVelocityFields[GroupId]; }
-	const FVelocityField& GetVelocityField(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupVelocityFields[GroupId]; }
+	Chaos::FVelocityField& GetVelocityField(const uint32 GroupId = 0) { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupVelocityFields[GroupId]; }
+	const Chaos::FVelocityField& GetVelocityField(const uint32 GroupId = 0) const { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupVelocityFields[GroupId]; }
 
 	void ResetSelfCollision() { MCollisionTriangles.Reset(); MDisabledCollisionElements.Reset(); };
-	TArray<TVector<int32, 3>>& CollisionTriangles() { return MCollisionTriangles; }
-	TSet<TVector<int32, 2>>& DisabledCollisionElements() { return MDisabledCollisionElements; }
+	TArray<Chaos::TVector<int32, 3>>& CollisionTriangles() { return MCollisionTriangles; }
+	TSet<Chaos::TVector<int32, 2>>& DisabledCollisionElements() { return MDisabledCollisionElements; }
 
 	int32 GetIterations() const { return MNumIterations; }
 	void SetIterations(const int32 Iterations) { MNumIterations = Iterations; }
 
-	FReal GetSelfCollisionThickness(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupSelfCollisionThicknesses[GroupId]; }
-	void SetSelfCollisionThickness(const FReal SelfCollisionThickness, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupSelfCollisionThicknesses[GroupId] = SelfCollisionThickness; }
+	Chaos::FReal GetSelfCollisionThickness(const uint32 GroupId = 0) const { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupSelfCollisionThicknesses[GroupId]; }
+	void SetSelfCollisionThickness(const Chaos::FReal SelfCollisionThickness, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupSelfCollisionThicknesses[GroupId] = SelfCollisionThickness; }
 
-	FReal GetCollisionThickness(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupCollisionThicknesses[GroupId]; }
-	void SetCollisionThickness(const FReal CollisionThickness, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupCollisionThicknesses[GroupId] = CollisionThickness; }
+	Chaos::FReal GetCollisionThickness(const uint32 GroupId = 0) const { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupCollisionThicknesses[GroupId]; }
+	void SetCollisionThickness(const Chaos::FReal CollisionThickness, const uint32 GroupId = 0) { check(GroupId < Chaos::TArrayCollection::Size()); MGroupCollisionThicknesses[GroupId] = CollisionThickness; }
 
-	FReal GetCoefficientOfFriction(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupCoefficientOfFrictions[GroupId]; }
-	void SetCoefficientOfFriction(const FReal CoefficientOfFriction, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupCoefficientOfFrictions[GroupId] = CoefficientOfFriction; }
+	Chaos::FReal GetCoefficientOfFriction(const uint32 GroupId = 0) const { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupCoefficientOfFrictions[GroupId]; }
+	void SetCoefficientOfFriction(const Chaos::FReal CoefficientOfFriction, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupCoefficientOfFrictions[GroupId] = CoefficientOfFriction; }
 
-	FReal GetDamping(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupDampings[GroupId]; }
-	void SetDamping(const FReal Damping, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupDampings[GroupId] = Damping; }
+	Chaos::FReal GetDamping(const uint32 GroupId = 0) const { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupDampings[GroupId]; }
+	void SetDamping(const Chaos::FReal Damping, const uint32 GroupId = 0) { check(GroupId < Chaos::TArrayCollection::Size()); MGroupDampings[GroupId] = Damping; }
 
-	bool GetUseCCD(const uint32 GroupId = 0) const { check(GroupId < TArrayCollection::Size()); return MGroupUseCCDs[GroupId]; }
-	void SetUseCCD(const bool bUseCCD, const uint32 GroupId = 0) { check(GroupId < TArrayCollection::Size()); MGroupUseCCDs[GroupId] = bUseCCD; }
+	bool GetUseCCD(const uint32 GroupId = 0) const { check(GroupId < Chaos::TArrayCollection::Size()); return MGroupUseCCDs[GroupId]; }
+	void SetUseCCD(const bool bUseCCD, const uint32 GroupId = 0) { check(GroupId < Chaos::TArrayCollection::Size()); MGroupUseCCDs[GroupId] = bUseCCD; }
 
 	UE_DEPRECATED(4.27, "Use GetCollisionStatus() instead")
 	const bool Collided(int32 index) { return MCollided[index]; }
 
 	const TArray<bool>& GetCollisionStatus() { return MCollided; }
-	const TArray<FVec3>& GetCollisionContacts() const { return MCollisionContacts; }
-	const TArray<FVec3>& GetCollisionNormals() const { return MCollisionNormals; }
+	const TArray<Chaos::FVec3>& GetCollisionContacts() const { return MCollisionContacts; }
+	const TArray<Chaos::FVec3>& GetCollisionNormals() const { return MCollisionNormals; }
 
-	FReal GetTime() const { return MTime; }
+	Chaos::FReal GetTime() const { return MTime; }
 
  private:
 	// Add simulation groups and set default values
@@ -132,57 +132,57 @@ class CHAOS_PLUGIN_SANDBOX_API FPBDEvolution : public TArrayCollection
 	void ResetGroups();
 	// Selected versions of the pre-iteration updates (euler step, force, velocity field. damping updates)..
 	template<bool bForceRule, bool bVelocityField, bool bDampVelocityRule>
-	void PreIterationUpdate(const FReal Dt, const int32 Offset, const int32 Range, const int32 MinParallelBatchSize);
+	void PreIterationUpdate(const Chaos::FReal Dt, const int32 Offset, const int32 Range, const int32 MinParallelBatchSize);
 
 private:
-	FPBDParticles MParticles;
-	TPBDActiveView<FPBDParticles> MParticlesActiveView;
-	FKinematicGeometryClothParticles MCollisionParticles;
-	TPBDActiveView<FKinematicGeometryClothParticles> MCollisionParticlesActiveView;
+	Chaos::FPBDParticles MParticles;
+	Chaos::TPBDActiveView<Chaos::FPBDParticles> MParticlesActiveView;
+	Chaos::FKinematicGeometryClothParticles MCollisionParticles;
+	Chaos::TPBDActiveView<Chaos::FKinematicGeometryClothParticles> MCollisionParticlesActiveView;
 
-	TArray<TVector<int32, 3>> MCollisionTriangles;       // Used for self-collisions
-	TSet<TVector<int32, 2>> MDisabledCollisionElements;  // 
+	TArray<Chaos::TVector<int32, 3>> MCollisionTriangles;       // Used for self-collisions
+	TSet<Chaos::TVector<int32, 2>> MDisabledCollisionElements;  // 
 
-	TArrayCollectionArray<FRigidTransform3> MCollisionTransforms;  // Used for CCD to store the initial state before the kinematic update
-	TArrayCollectionArray<bool> MCollided;
-	TArrayCollectionArray<uint32> MCollisionParticleGroupIds;  // Used for per group parameters for collision particles
-	TArrayCollectionArray<uint32> MParticleGroupIds;  // Used for per group parameters for particles
-	TArray<FVec3> MCollisionContacts;
-	TArray<FVec3> MCollisionNormals;
+	Chaos::TArrayCollectionArray<Chaos::FRigidTransform3> MCollisionTransforms;  // Used for CCD to store the initial state before the kinematic update
+	Chaos::TArrayCollectionArray<bool> MCollided;
+	Chaos::TArrayCollectionArray<uint32> MCollisionParticleGroupIds;  // Used for per group parameters for collision particles
+	Chaos::TArrayCollectionArray<uint32> MParticleGroupIds;  // Used for per group parameters for particles
+	TArray<Chaos::FVec3> MCollisionContacts;
+	TArray<Chaos::FVec3> MCollisionNormals;
 
-	TArrayCollectionArray<FGravityForces> MGroupGravityForces;
-	TArrayCollectionArray<FVelocityField> MGroupVelocityFields;
-	TArrayCollectionArray<TFunction<void(FPBDParticles&, const FReal, const int32)>> MGroupForceRules;
-	TArrayCollectionArray<FReal> MGroupCollisionThicknesses;
-	TArrayCollectionArray<FReal> MGroupSelfCollisionThicknesses;
-	TArrayCollectionArray<FReal> MGroupCoefficientOfFrictions;
-	TArrayCollectionArray<FReal> MGroupDampings;
-	TArrayCollectionArray<bool> MGroupUseCCDs;
+	Chaos::TArrayCollectionArray<FGravityForces> MGroupGravityForces;
+	Chaos::TArrayCollectionArray<Chaos::FVelocityField> MGroupVelocityFields;
+	Chaos::TArrayCollectionArray<TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal, const int32)>> MGroupForceRules;
+	Chaos::TArrayCollectionArray<Chaos::FReal> MGroupCollisionThicknesses;
+	Chaos::TArrayCollectionArray<Chaos::FReal> MGroupSelfCollisionThicknesses;
+	Chaos::TArrayCollectionArray<Chaos::FReal> MGroupCoefficientOfFrictions;
+	Chaos::TArrayCollectionArray<Chaos::FReal> MGroupDampings;
+	Chaos::TArrayCollectionArray<bool> MGroupUseCCDs;
 	
-	TArray<TFunction<void(const FPBDParticles&, const FReal)>> MConstraintInits;
-	TPBDActiveView<TArray<TFunction<void(const FPBDParticles&, const FReal)>>> MConstraintInitsActiveView;
-	TArray<TFunction<void(FPBDParticles&, const FReal)>> MConstraintRules;
-	TPBDActiveView<TArray<TFunction<void(FPBDParticles&, const FReal)>>> MConstraintRulesActiveView;
+	TArray<TFunction<void(const Chaos::FPBDParticles&, const Chaos::FReal)>> MConstraintInits;
+	Chaos::TPBDActiveView<TArray<TFunction<void(const Chaos::FPBDParticles&, const Chaos::FReal)>>> MConstraintInitsActiveView;
+	TArray<TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal)>> MConstraintRules;
+	Chaos::TPBDActiveView<TArray<TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal)>>> MConstraintRulesActiveView;
 
-	TFunction<void(FPBDParticles&, const FReal, const FReal, const int32)> MKinematicUpdate;
-	TFunction<void(FKinematicGeometryClothParticles&, const FReal, const FReal, const int32)> MCollisionKinematicUpdate;
+	TFunction<void(Chaos::FPBDParticles&, const Chaos::FReal, const Chaos::FReal, const int32)> MKinematicUpdate;
+	TFunction<void(Chaos::FKinematicGeometryClothParticles&, const Chaos::FReal, const Chaos::FReal, const int32)> MCollisionKinematicUpdate;
 
 	int32 MNumIterations;
-	FVec3 MGravity;
-	FReal MCollisionThickness;
-	FReal MSelfCollisionThickness;
-	FReal MCoefficientOfFriction;
-	FReal MDamping;
-	FReal MTime;
-	FReal MSmoothDt;
+	Chaos::FVec3 MGravity;
+	Chaos::FReal MCollisionThickness;
+	Chaos::FReal MSelfCollisionThickness;
+	Chaos::FReal MCoefficientOfFriction;
+	Chaos::FReal MDamping;
+	Chaos::FReal MTime;
+	Chaos::FReal MSmoothDt;
 };
 }
 
 // Support ISPC enable/disable in non-shipping builds
 #if !INTEL_ISPC
-const bool bChaos_PostIterationUpdates_ISPC_Enabled = false;
+const bool bChaosPluginSandbox_PostIterationUpdates_ISPC_Enabled = false;
 #elif UE_BUILD_SHIPPING
-const bool bChaos_PostIterationUpdates_ISPC_Enabled = true;
+const bool bChaosPluginSandbox_PostIterationUpdates_ISPC_Enabled = true;
 #else
-extern CHAOS_API bool bChaos_PostIterationUpdates_ISPC_Enabled;
+extern CHAOSPLUGINSANDBOX_API bool bChaosPluginSandbox_PostIterationUpdates_ISPC_Enabled;
 #endif

@@ -1,5 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-#include "Chaos/PBDEvolution.h"
+#include "PBDEvolution.h"
 
 #include "Chaos/Framework/Parallel.h"
 #include "Chaos/PBDCollisionSphereConstraints.h"
@@ -40,10 +40,11 @@ TAutoConsoleVariable<int32> CVarChaosPBDEvolutionMinParallelBatchSize(TEXT("p.Ch
 TAutoConsoleVariable<bool> CVarChaosPBDEvolutionWriteCCDContacts(TEXT("p.Chaos.PBDEvolution.WriteCCDContacts"), false, TEXT("Write CCD collision contacts and normals potentially causing the CCD collision threads to lock, allowing for debugging of these contacts."), ECVF_Cheat);
 
 #if INTEL_ISPC && !UE_BUILD_SHIPPING
-bool bChaos_PostIterationUpdates_ISPC_Enabled = true;
-FAutoConsoleVariableRef CVarChaosPostIterationUpdatesISPCEnabled(TEXT("p.Chaos.PostIterationUpdates.ISPC"), bChaos_PostIterationUpdates_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in PBD Post iteration updates"));
+bool bChaosPluginSandbox_PostIterationUpdates_ISPC_Enabled = true;
+FAutoConsoleVariableRef CVarChaosPluginSandboxPostIterationUpdatesISPCEnabled(TEXT("p.ChaosPluginSandbox.PostIterationUpdates.ISPC"), bChaosPluginSandbox_PostIterationUpdates_ISPC_Enabled, TEXT("Whether to use ISPC optimizations in PBD Post iteration updates"));
 #endif
 
+using namespace Chaos;
 using namespace ChaosPluginSandbox;
 
 void FPBDEvolution::AddGroups(int32 NumGroups)
@@ -437,7 +438,7 @@ void FPBDEvolution::AdvanceOneTimeStep(const FReal Dt, const bool bSmoothDt)
 			SCOPE_CYCLE_COUNTER(STAT_ChaosPBDPostIterationUpdates);
 
 			// Particle update, V = (P - X) / Dt; X = P;
-			if (bChaos_PostIterationUpdates_ISPC_Enabled)
+			if (bChaosPluginSandbox_PostIterationUpdates_ISPC_Enabled)
 			{
 #if INTEL_ISPC
 				MParticlesActiveView.RangeFor(
