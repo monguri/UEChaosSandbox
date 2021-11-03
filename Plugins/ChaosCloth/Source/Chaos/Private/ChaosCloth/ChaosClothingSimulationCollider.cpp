@@ -518,8 +518,10 @@ void FClothingSimulationCollider::ExtractPhysicsAssetCollision(FClothCollisionDa
 				// Add stub for extracted collision data
 				FClothCollisionPrim_Convex Convex;
 				Convex.BoneIndex = MappedBoneIndex;
-				const FImplicitObject& ChaosConvexMesh = *ConvexElem.GetChaosConvexMesh();
-				const FConvex& ChaosConvex = ChaosConvexMesh.GetObjectChecked<FConvex>();
+				//const FImplicitObject& ChaosConvexMesh = *ConvexElem.GetChaosConvexMesh();
+				//const FConvex& ChaosConvex = ChaosConvexMesh.GetObjectChecked<FConvex>();
+				continue;
+				FConvex ChaosConvex;
 
 				// Copy faces' planes and indices
 				const TArray<TPlaneConcrete<FReal, 3>>& Faces = ChaosConvex.GetFaces();
